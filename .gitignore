@@ -21,6 +21,9 @@ coverage.xml
 test-results/
 playwright-report/
 
+# Reports
+reports/
+
 # IDE / Editor
 .idea/
 .vscode/
@@ -34,3 +37,7 @@ Thumbs.db
 # Logs
 *.log
 
+# Environment variables
+.env
+.env.local
+.env.*.local

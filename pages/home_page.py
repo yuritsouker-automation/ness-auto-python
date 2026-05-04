@@ -1,15 +1,15 @@
-from playwright.sync_api import Page, expect
+import os
+from playwright.sync_api import Page
 
 
 class HomePage:
-    URL = "https://www.demoblaze.com/"
+    URL = os.getenv("HOME_URL", "https://www.demoblaze.com/")
 
     # Locators
-    LOGIN_NAV_BUTTON = "#login2"
-    USERNAME_INPUT = "#loginusername"
-    PASSWORD_INPUT = "#loginpassword"
-    LOGIN_SUBMIT_BUTTON = "button[onclick='logIn()']"
-    WELCOME_USER_LINK = "#nameofuser"
+    PRODUCT_CARDS_XPATH = "//div[@id='tbodyid']//div[contains(@class,'card-block')]"
+    PRODUCT_TITLE_LINK = "h4.card-title a"
+    PRODUCT_PRICE = "h5"
+    NEXT_PAGE_BUTTON = "#next2"
 
     def __init__(self, page: Page):
         self.page = page
@@ -18,42 +18,58 @@ class HomePage:
         """Navigate to the DemoBlaze home page."""
         self.page.goto(self.URL)
 
-    def login(self, username: str, password: str):
+    def search_items_by_name_under_price(self, query: str, max_price: float, limit: int = 5) -> list:
         """
-        Perform login on DemoBlaze.
+        Search for products by category name and return up to `limit` product URLs
+        whose price is less than or equal to `max_price`.
 
-        :param username: The username (email) to log in with.
-        :param password: The password to log in with.
+        Evaluates only the currently visible page and returns up to `limit`
+        qualifying items without navigating pagination.
+
+        :param query:     Category name to click (e.g. "Phones", "Laptops").
+        :param max_price: Maximum allowed price (inclusive).
+        :param limit:     Maximum number of product URLs to return (default 5).
+        :return:          List of absolute product URLs satisfying the price condition.
         """
-        # Click the Login nav button to open the login modal
-        self.page.click(self.LOGIN_NAV_BUTTON)
+        collected: list = []
 
-        # Wait for the login modal to appear
-        self.page.wait_for_selector(self.USERNAME_INPUT, state="visible")
+        # Click the category link whose visible text matches `query`
+        self.page.click(f"text={query}")
+        self.page.wait_for_timeout(1500)
 
-        # Fill in credentials
-        self.page.fill(self.USERNAME_INPUT, username)
-        self.page.fill(self.PASSWORD_INPUT, password)
+        # Wait for at least one product card to be present on the current page
+        self.page.wait_for_selector(self.PRODUCT_CARDS_XPATH, state="attached")
+        self.page.wait_for_timeout(500)
 
-        # Click the Log in submit button
-        self.page.click(self.LOGIN_SUBMIT_BUTTON)
+        cards = self.page.query_selector_all(self.PRODUCT_CARDS_XPATH)
 
-    def get_welcome_user_locator(self):
-        """Return the locator for the welcome user element."""
-        return self.page.locator(self.WELCOME_USER_LINK)
+        for card in cards:
+            if len(collected) >= limit:
+                break
 
-    def logout(self):
-        """Click the logout button and validate the login nav button is visible again."""
-        self.page.click("#logout2")
-        expect(self.page.locator(self.LOGIN_NAV_BUTTON)).to_be_visible()
+            price_el = card.query_selector(self.PRODUCT_PRICE)
+            title_el = card.query_selector(self.PRODUCT_TITLE_LINK)
 
-    def validate_logged_in(self, expected_username: str):
-        """
-        Validate that the user is logged in by checking the welcome message.
+            if not price_el or not title_el:
+                continue
 
-        :param expected_username: The username expected in the welcome text.
-        """
-        welcome_locator = self.get_welcome_user_locator()
-        expect(welcome_locator).to_be_visible()
-        expect(welcome_locator).to_have_text(f"Welcome {expected_username}")
+            # Price text is e.g. "$360" — strip the dollar sign and convert
+            price_text = price_el.inner_text().replace("$", "").replace(",", "").strip()
+            try:
+                price = float(price_text)
+            except ValueError:
+                continue
+
+            if price <= max_price:
+                href = title_el.get_attribute("href") or ""
+                # Build absolute URL when only a relative path is returned
+                if href.startswith("http"):
+                    full_url = href
+                else:
+                    full_url = self.URL.rstrip("/") + "/" + href.lstrip("/")
+                collected.append(full_url)
+
+
+        return collected
+
 
