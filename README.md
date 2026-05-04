@@ -193,7 +193,7 @@ Update `data/credentials.json` with test account:
 
 2. Each test starts with login from fixtures.
    - Login credentials are currently loaded from `data/credentials.json`.
-   - Best practice for future hardening: store credentials in environment variables (or CI secrets) instead of JSON files.
+   - Best practice for future hardening: store credentials in **environment variables (or CI secrets) instead of JSON** files!!!
 
 3. Each test starts with cart cleanup from fixtures.
    - The `clear_cart` fixture ensures a clean cart state in case a previous test failed before cleanup.
