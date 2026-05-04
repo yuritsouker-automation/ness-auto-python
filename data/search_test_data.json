@@ -1,0 +1,21 @@
+[
+  {
+    "query": "Phones",
+    "max_price": 500,
+    "limit": 5,
+    "budget_per_item": 500
+  },
+  {
+    "query": "Laptops",
+    "max_price": 1800,
+    "limit": 5,
+    "budget_per_item": 1800
+  },
+  {
+    "query": "Monitors",
+    "max_price": 700,
+    "limit": 5,
+    "budget_per_item": 700
+  }
+]
+

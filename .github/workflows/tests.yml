@@ -1,0 +1,79 @@
+name: Run Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+
+      - name: Run tests (headless)
+        env:
+          # Override HOME_URL to test against different environments
+          # Default: https://www.demoblaze.com/
+          # For staging: https://staging.demoblaze.com/
+          HOME_URL: ${{ secrets.HOME_URL || 'https://www.demoblaze.com/' }}
+        run: |
+          python -m pytest tests \
+            -o addopts="--browser chromium -v --html=reports/report.html --self-contained-html" \
+            -v
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report
+          path: reports/
+          retention-days: 30
+
+      - name: Upload cart validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cart-validation
+          path: reports/cart_validation/
+          retention-days: 30
+        continue-on-error: true
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: reports/screenshots/
+          retention-days: 30
+        continue-on-error: true
+
+      - name: Print test summary
+        if: always()
+        run: |
+          if [ -f reports/report.html ]; then
+            echo "✓ Test report generated: reports/report.html"
+          fi
+          if [ -d reports/cart_validation ]; then
+            echo "✓ Cart validation artifacts saved"
+          fi
+
