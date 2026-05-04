@@ -187,6 +187,22 @@ Update `data/credentials.json` with test account:
   - Adds items to cart
   - Validates cart total
 
+## About The Tests
+
+1. The framework was chosen to test `https://www.demoblaze.com/`.
+   - I also tried large commerce sites like eBay/Amazon, but anti-bot/user-captcha protections do not allow stable automation runs for this project scope.
+
+2. Each test starts with login from fixtures.
+   - Login credentials are currently loaded from `data/credentials.json`.
+   - Best practice for future hardening: store credentials in environment variables (or CI secrets) instead of JSON files.
+
+3. Each test starts with cart cleanup from fixtures.
+   - The `clear_cart` fixture ensures a clean cart state in case a previous test failed before cleanup.
+
+4. The test iterates over `data/search_test_data.json`.
+   - Each JSON entry is executed as a separate parametrized test row.
+   - You can see a separate row per iteration in the HTML report.
+
 ## 🔄 CI/CD Pipeline
 
 Tests run automatically on GitHub Actions:
