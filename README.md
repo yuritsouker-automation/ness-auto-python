@@ -266,3 +266,4 @@ playwright install
 **Python:** 3.13+  
 **Playwright:** 1.59.0+
 
+
