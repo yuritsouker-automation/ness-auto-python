@@ -1,5 +1,6 @@
 import os
 from playwright.sync_api import Page
+from utils.timeouts import SHORT, MEDIUM, LONG
 
 
 class CartPage:
@@ -34,7 +35,7 @@ class CartPage:
     def clear_cart(self):
         """Remove all existing items from the cart so each test starts clean."""
         self.open_cart()
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(MEDIUM + SHORT)
 
         # Run multiple cleanup passes because DemoBlaze cart rendering can lag.
         for _ in range(5):
@@ -45,10 +46,10 @@ class CartPage:
                     break
 
                 delete_links.first.click()
-                self.page.wait_for_timeout(1200)
+                self.page.wait_for_timeout(int(MEDIUM * 0.8))
 
             self.page.reload(wait_until="domcontentloaded")
-            self.page.wait_for_timeout(1800)
+            self.page.wait_for_timeout(int(LONG * 0.6))
 
             remaining_delete_links = self.page.locator(self.CART_DELETE_LINKS).count()
             remaining_total = self.get_cart_total_amount()
@@ -64,7 +65,7 @@ class CartPage:
             )
 
         self.page.goto(self.HOME_URL)
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(SHORT * 2)
 
     def add_items_to_cart(self, urls: list) -> list:
         """
@@ -108,7 +109,7 @@ class CartPage:
                                 if group_radios:
                                     random_radio = random.choice(group_radios)
                                     random_radio.click()
-                                    self.page.wait_for_timeout(100)
+                                    self.page.wait_for_timeout(SHORT // 5)
                                     radio_groups[group_name] = True
                         except Exception:
                             pass
@@ -117,7 +118,7 @@ class CartPage:
                         qty_input = self.page.query_selector("input[type='number']")
                         if qty_input and qty_input.is_enabled():
                             qty_input.fill(str(random.randint(1, 3)))
-                            self.page.wait_for_timeout(100)
+                            self.page.wait_for_timeout(SHORT // 5)
                     except Exception:
                         pass
                 except Exception:
@@ -126,7 +127,7 @@ class CartPage:
                 add_cart_btn = self.page.locator(self.ADD_TO_CART_BUTTON).first
                 if add_cart_btn.count() > 0:
                     add_cart_btn.click()
-                    self.page.wait_for_timeout(1000)
+                    self.page.wait_for_timeout(SHORT * 2)
 
                     screenshot_dir = os.path.join(os.path.dirname(__file__), "..", "reports", "cart_screenshots")
                     os.makedirs(screenshot_dir, exist_ok=True)
@@ -161,7 +162,7 @@ class CartPage:
 
         # Return to home page after processing
         self.page.goto(self.HOME_URL)
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(SHORT * 2)
 
         return added_items
 

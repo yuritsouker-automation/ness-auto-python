@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from playwright.sync_api import Page
 from utils.report_config import ReportConfig
+from utils.timeouts import MEDIUM
 
 BASE_URL = os.getenv("HOME_URL", "https://www.demoblaze.com/")
 
@@ -51,7 +52,7 @@ def logged_in_page(page: Page):
         except Exception as exc:
             last_error = exc
             page.goto(BASE_URL)
-            page.wait_for_timeout(1500)
+            page.wait_for_timeout(MEDIUM)
 
     if last_error is not None:
         raise last_error

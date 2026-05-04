@@ -1,5 +1,6 @@
 import os
 from playwright.sync_api import Page
+from utils.timeouts import MEDIUM, SHORT
 
 
 class HomePage:
@@ -35,11 +36,11 @@ class HomePage:
 
         # Click the category link whose visible text matches `query`
         self.page.click(f"text={query}")
-        self.page.wait_for_timeout(1500)
+        self.page.wait_for_timeout(MEDIUM)
 
         # Wait for at least one product card to be present on the current page
         self.page.wait_for_selector(self.PRODUCT_CARDS_XPATH, state="attached")
-        self.page.wait_for_timeout(500)
+        self.page.wait_for_timeout(SHORT)
 
         cards = self.page.query_selector_all(self.PRODUCT_CARDS_XPATH)
 

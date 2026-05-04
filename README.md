@@ -112,6 +112,12 @@ open reports/report.html  # macOS
    - `cart-validation` — Cart validation data
    - `test-screenshots` — Failure screenshots
 
+### Example: Successful GitHub Run
+
+- **Workflow run:** [Run #25318321544](https://github.com/yuritsouker-automation/ness-auto-python/actions/runs/25318321544/job/74220852982)
+- **Main report artifact download:** [Artifact #6783147186](https://github.com/yuritsouker-automation/ness-auto-python/actions/runs/25318321544/artifacts/6783147186)
+- **Cart validation artifact download:** [Artifact #6783147402](https://github.com/yuritsouker-automation/ness-auto-python/actions/runs/25318321544/artifacts/6783147402)
+
 ## ⚙️ Configuration
 
 ### Environment Variables
