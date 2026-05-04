@@ -188,6 +188,7 @@ Update `data/credentials.json` with test account:
   - Validates cart total
 
 ## About The Tests
+
 1. The framework was chosen to test `https://www.demoblaze.com/`.
    - I also tried large commerce sites like eBay/Amazon, but anti-bot/user-captcha protections do not allow stable automation runs for this project scope.
 
