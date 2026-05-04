@@ -58,24 +58,24 @@ ness-auto-python/
 
 ## 🧪 Running Tests
 
-### Local Development (Headed Mode)
+### Local Development (Headed Mode - with Browser UI)
 
 ```bash
-# Run all tests with browser UI
+# Run all tests with browser UI visible
 python -m pytest tests -v --headed
 
-# Run specific test
+# Run specific test with UI
 python -m pytest tests/test_end_to_end.py::TestValidateEndToEnd::test_search_and_add_to_cart -v --headed
 ```
 
-### CI/CD Mode (Headless)
+### Headless Mode (CI/CD - default)
 
 ```bash
-# Run all tests headless + generate report
+# Run all tests headless (no browser UI)
 python -m pytest tests -v
 
-# Or explicitly headless
-python -o addopts="--browser chromium -v --html=reports/report.html --self-contained-html" tests
+# Explicitly override to headless if pytest.ini has --headed
+python -m pytest tests -o addopts="" -v
 ```
 
 ### Custom Environment

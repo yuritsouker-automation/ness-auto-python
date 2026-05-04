@@ -37,10 +37,9 @@ jobs:
           # For staging: https://staging.demoblaze.com/
           HOME_URL: ${{ secrets.HOME_URL || 'https://www.demoblaze.com/' }}
         run: |
-          python -m pytest tests -v \
-            --browser chromium \
-            --html=reports/report.html \
-            --self-contained-html
+          python -m pytest tests \
+            -o addopts="--browser chromium -v --html=reports/report.html --self-contained-html" \
+            -v
 
       - name: Upload test report
         if: always()
